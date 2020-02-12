@@ -31,11 +31,12 @@ routes.post('/file/create', upload.single('file'), FileController.store);
 routes.get('/providers', ProviderController.index);
 
 routes.get('/appointments', AppointmentController.index);
-routes.post('/appointments/create', AppointmentController.store);
+routes.post('/appointment/create', AppointmentController.store);
+routes.delete('/appointment/:id/delete', AppointmentController.delete);
 
-routes.get('/schedule', ScheduleController.index);
+routes.get('/schedules', ScheduleController.index);
 
 routes.get('/notifications', NotificationController.index);
-routes.put('/notifications/update/:id', NotificationController.update);
+routes.put('/notification/:id/update', NotificationController.update);
 
 export default routes;

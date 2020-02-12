@@ -4,7 +4,9 @@ import User from '../models/User';
 
 class UserController{
     async index(request, response){
-        const users = await User.findAll();
+        const users = await User.findAll({
+            order: ['id']
+        });
 
         return response.json(users);
     };
