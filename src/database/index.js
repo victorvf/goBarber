@@ -25,7 +25,7 @@ class Database {
 
     mongo(){
         this.mongoConnection = mongoose.connect(
-            'mongodb://root:mongo2020@mongo:27017',
+            process.env.MONGO_URL,
             {
                 useNewUrlParser: true,
                 useFindAndModify: true
