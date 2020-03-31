@@ -18,12 +18,12 @@ const routes = new Router();
 const upload = multer(multerConfig);
 
 routes.post('/session', SessionController.store);
+routes.post('/user/create', UserController.store);
 
 routes.use(authMiddleware);
 
 routes.get('/users', UserController.index);
 routes.get('/user/:id', UserController.show);
-routes.post('/user/create', UserController.store);
 routes.put('/user/update', UserController.update);
 routes.delete('/user/:id/delete', UserController.delete);
 
