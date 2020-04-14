@@ -3,11 +3,16 @@ import { useSelector } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
-import SignIn from '~/pages/SignIn';
-import SignUp from '~/pages/SignUp';
-import Dashboard from '~/pages/Dashboard';
-import Profile from '~/pages/Profile';
+import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
+import Dashboard from './pages/Dashboard';
+import Profile from './pages/Profile';
+
+import SelectProvider from './pages/New/SelectProvider';
+import SelectDateTime from './pages/New/SelectDateTime';
+import Confirm from './pages/New/Confirm';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -36,6 +41,50 @@ export default function Routes() {
                         component={Dashboard}
                         options={Dashboard.navigationOptions}
                     />
+                    <Tab.Screen
+                        name="New"
+                        options={{
+                            tabBarVisible: false,
+                            tabBarLabel: 'Agendar',
+                            tabBarIcon: ({ color, size }) => (
+                                <Icon
+                                    name="add-circle-outline"
+                                    size={size}
+                                    color={color}
+                                />
+                            ),
+                        }}
+                    >
+                        {() => (
+                            <Stack.Navigator
+                                initialRouteName="SelectProvider"
+                                screenOptions={{
+                                    headerTransparent: true,
+                                    headerTintColor: '#fff',
+                                    headerTitleAlign: 'center',
+                                    headerLeftContainerStyle: {
+                                        marginLeft: 20,
+                                    },
+                                }}
+                            >
+                                <Stack.Screen
+                                    name="SelectProvider"
+                                    component={SelectProvider}
+                                    options={SelectProvider.navigationOptions}
+                                />
+                                <Stack.Screen
+                                    name="SelectDateTime"
+                                    component={SelectDateTime}
+                                    options={SelectDateTime.navigationOptions}
+                                />
+                                <Stack.Screen
+                                    name="Confirm"
+                                    component={Confirm}
+                                    options={Confirm.navigationOptions}
+                                />
+                            </Stack.Navigator>
+                        )}
+                    </Tab.Screen>
                     <Tab.Screen
                         name="Profile"
                         component={Profile}
