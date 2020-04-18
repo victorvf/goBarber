@@ -27,7 +27,7 @@ to build the goBarber, application where you manage a barber shop, the backend b
 
 **Clone**
 ```
-git clone https://github.com/victorvf/goStack-fastfeet.git
+git clone https://github.com/victorvf/goBarber.git
 ```
 
 **Node.js**
