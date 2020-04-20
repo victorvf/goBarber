@@ -2,7 +2,8 @@ node_modules/
 postgres/
 yarn-error.log
 mongoDb/
-
+*.sqlite
+coverage/
 
 # OSX
 #
