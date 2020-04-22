@@ -1,21 +1,33 @@
 import User from '../models/User';
 import File from '../models/File';
 
-class ProviderController{
-    async index(request, response){
+import Cache from '../../lib/Cache';
+
+class ProviderController {
+    async index(request, response) {
+        const cached = await Cache.get('providers');
+
+        if (cached) {
+            return response.json(cached);
+        }
+
         const providers = await User.findAll({
-            where: {provider: true},
+            where: { provider: true },
             order: ['id'],
             attributes: ['id', 'name', 'email'],
-            include: [{
-                model: File,
-                as: 'avatar',
-                attributes: ['id', 'name', 'path', 'url']
-            }]
+            include: [
+                {
+                    model: File,
+                    as: 'avatar',
+                    attributes: ['id', 'name', 'path', 'url'],
+                },
+            ],
         });
 
-        response.json(providers);
-    };
-};
+        await Cache.set('providers', providers);
+
+        return response.json(providers);
+    }
+}
 
 export default new ProviderController();

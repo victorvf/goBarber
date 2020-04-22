@@ -1,14 +1,14 @@
-import Mail from '../../lib/Mail';
 import pt from 'date-fns/locale/pt';
-import {format, parseISO} from 'date-fns';
+import { format, parseISO } from 'date-fns';
+import Mail from '../../lib/Mail';
 
-class CancellationMail{
-    get key(){
-        return 'CancellationMail'
-    };
+class CancellationMail {
+    get key() {
+        return 'CancellationMail';
+    }
 
-    async handle({ data }){
-        const {appointment} = data;
+    async handle({ data }) {
+        const { appointment } = data;
 
         await Mail.sendMail({
             to: `${appointment.provider.name} <${appointment.provider.email}>`,
@@ -20,11 +20,11 @@ class CancellationMail{
                 date: format(
                     parseISO(appointment.date),
                     "dd 'de' MMMM', às' H:mm'h'",
-                    { locale: pt}
-                )
-            }
+                    { locale: pt }
+                ),
+            },
         });
     }
-};
+}
 
 export default new CancellationMail();

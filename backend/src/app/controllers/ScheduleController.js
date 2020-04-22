@@ -4,25 +4,23 @@ import { Op } from 'sequelize';
 import Appointment from '../models/Appointment';
 import User from '../models/User';
 
-class ScheduleController{
-    async index(request, response){
+class ScheduleController {
+    async index(request, response) {
         const isProvider = await User.findOne({
             where: {
                 id: request.userId,
-                provider: true
-            }
+                provider: true,
+            },
         });
 
-        if(!isProvider){
+        if (!isProvider) {
             return response.status(401).json({
-                error: 'user is not a provider'
+                error: 'user is not a provider',
             });
-        };
+        }
 
         const { date } = request.query;
         const parsedDate = parseISO(date);
-
-
 
         const appointments = await Appointment.findAll({
             where: {
@@ -31,9 +29,9 @@ class ScheduleController{
                 date: {
                     [Op.between]: [
                         startOfDay(parsedDate),
-                        endOfDay(parsedDate)
-                    ]
-                }
+                        endOfDay(parsedDate),
+                    ],
+                },
             },
             include: [
                 {
@@ -42,11 +40,11 @@ class ScheduleController{
                     attributes: ['name'],
                 },
             ],
-            order: ['date']
+            order: ['date'],
         });
 
         return response.json(appointments);
     }
-};
+}
 
 export default new ScheduleController();

@@ -1,5 +1,4 @@
 import jwt from 'jsonwebtoken';
-import * as Yup from 'yup';
 
 import User from '../models/User';
 import File from '../models/File';
@@ -7,21 +6,8 @@ import File from '../models/File';
 import authConfig from '../../config/auth';
 
 class SessionController {
-    async store(request, response){
-        const schema = Yup.object().shape({
-            email: Yup.string()
-                .email()
-                .required(),
-            password: Yup.string().required(),
-        });
-
-        if(!(await schema.isValid(request.body))){
-            return response.status(400).json({
-                error: 'Validation fails'
-            });
-        };
-
-        const {email, password} = request.body;
+    async store(request, response) {
+        const { email, password } = request.body;
 
         const user = await User.findOne({
             where: { email },
@@ -30,23 +16,23 @@ class SessionController {
                     model: File,
                     as: 'avatar',
                     attributes: ['id', 'path', 'url'],
-                }
-            ]
+                },
+            ],
         });
 
-        if(!user){
+        if (!user) {
             return response.status(404).json({
-                error: "User not found"
+                error: 'User not found',
             });
-        };
+        }
 
-        if(!(await user.checkPassword(password))){
+        if (!(await user.checkPassword(password))) {
             return response.status(401).json({
-                error: "Password does not match"
+                error: 'Password does not match',
             });
-        };
+        }
 
-        const {id, name, avatar, provider} = user;
+        const { id, name, avatar, provider } = user;
 
         return response.json({
             user: {
@@ -60,8 +46,7 @@ class SessionController {
                 expiresIn: authConfig.expiresIn,
             }),
         });
-
-    };
-};
+    }
+}
 
 export default new SessionController();

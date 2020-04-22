@@ -5,39 +5,39 @@ import CancellationMail from '../app/jobs/CancellationMail';
 
 const jobs = [CancellationMail];
 
-class Queue{
-    constructor(){
+class Queue {
+    constructor() {
         this.queues = {};
 
         this.init();
-    };
+    }
 
-    init(){
-        jobs.forEach(({key, handle}) => {
+    init() {
+        jobs.forEach(({ key, handle }) => {
             this.queues[key] = {
                 bee: new Bee(key, {
-                    redis: redisConfig
+                    redis: redisConfig,
                 }),
-                handle
-            }
+                handle,
+            };
         });
-    };
+    }
 
-    add(queue, job){
+    add(queue, job) {
         return this.queues[queue].bee.createJob(job).save();
-    };
+    }
 
-    processQueue(){
+    processQueue() {
         jobs.forEach(job => {
-            const {bee, handle} = this.queues[job.key];
+            const { bee, handle } = this.queues[job.key];
 
             bee.on('failed', this.handleFailure).process(handle);
         });
-    };
+    }
 
-    handleFailure(job, error){
+    handleFailure(job, error) {
         console.log(`Queue ${job.queue.name}: FAILED`, error);
     }
-};
+}
 
 export default new Queue();

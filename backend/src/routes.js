@@ -1,7 +1,12 @@
-import {Router} from 'express';
+import { Router } from 'express';
 import multer from 'multer';
 
 import multerConfig from './config/multer';
+
+import ValidadeUserStore from './app/validators/UserStore';
+import ValidadeUserUpdate from './app/validators/UserUpdate';
+import ValidadeSessionStore from './app/validators/SessionStore';
+import ValidadeAppointmentStore from './app/validators/AppointmentStore';
 
 import UserController from './app/controllers/UserController';
 import SessionController from './app/controllers/SessionController';
@@ -17,14 +22,14 @@ import authMiddleware from './app/middlewares/auth';
 const routes = new Router();
 const upload = multer(multerConfig);
 
-routes.post('/session', SessionController.store);
-routes.post('/user/create', UserController.store);
+routes.post('/session', ValidadeSessionStore, SessionController.store);
+routes.post('/user/create', ValidadeUserStore, UserController.store);
 
 routes.use(authMiddleware);
 
 routes.get('/users', UserController.index);
 routes.get('/user/:id', UserController.show);
-routes.put('/user/update', UserController.update);
+routes.put('/user/update', ValidadeUserUpdate, UserController.update);
 routes.delete('/user/:id/delete', UserController.delete);
 
 routes.post('/file/create', upload.single('file'), FileController.store);
@@ -33,7 +38,11 @@ routes.get('/providers', ProviderController.index);
 routes.get('/providers/:id/available', AvailableController.index);
 
 routes.get('/appointments', AppointmentController.index);
-routes.post('/appointment/create', AppointmentController.store);
+routes.post(
+    '/appointment/create',
+    ValidadeAppointmentStore,
+    AppointmentController.store
+);
 routes.delete('/appointment/:id/delete', AppointmentController.delete);
 
 routes.get('/schedules', ScheduleController.index);

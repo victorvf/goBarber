@@ -4,24 +4,24 @@ import 'express-async-errors';
 import path from 'path';
 import cors from 'cors';
 import * as Sentry from '@sentry/node';
-import sentryConfig from './config/sentry';
 import Youch from 'youch';
-import routes from './routes.js';
+import sentryConfig from './config/sentry';
+import routes from './routes';
 
 import './database';
 
-class App{
-    constructor(){
-        this.server  = express();
+class App {
+    constructor() {
+        this.server = express();
 
         Sentry.init(sentryConfig);
 
         this.middlewares();
         this.routes();
         this.exceptionHandler();
-    };
+    }
 
-    middlewares(){
+    middlewares() {
         this.server.use(Sentry.Handlers.requestHandler());
         this.server.use(cors());
         this.server.use(express.json());
@@ -29,26 +29,26 @@ class App{
             '/files',
             express.static(path.resolve(__dirname, '..', 'tmp', 'uploads'))
         );
-    };
+    }
 
-    routes(){
+    routes() {
         this.server.use(routes);
         this.server.use(Sentry.Handlers.errorHandler());
-    };
+    }
 
-    exceptionHandler(){
+    exceptionHandler() {
         this.server.use(async (error, request, response, next) => {
-            if(process.env.NODE_ENV === 'development'){
+            if (process.env.NODE_ENV === 'development') {
                 const errors = await new Youch(error, request).toJSON();
 
                 return response.status(500).json(errors);
-            };
+            }
 
             return response.status(500).json({
-                error: 'internal server error'
+                error: 'internal server error',
             });
         });
-    };
+    }
 }
 
 export default new App().server;
