@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -39,7 +39,7 @@ export default function Profile() {
         setConfirmPassword('');
     }, [profile]);
 
-    function handleSubmit() {
+    const handleSubmit = useCallback(() => {
         dispatch(
             updateProfileRequest({
                 name,
@@ -49,11 +49,11 @@ export default function Profile() {
                 confirmPassword,
             })
         );
-    }
+    }, [dispatch, confirmPassword, email, name, oldPassword, password]);
 
-    function handleLogout() {
+    const handleLogout = useCallback(() => {
         dispatch(signOut());
-    }
+    }, [dispatch]);
 
     return (
         <Background>

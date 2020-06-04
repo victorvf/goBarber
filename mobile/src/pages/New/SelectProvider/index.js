@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -9,17 +9,14 @@ import Background from '~/components/Background';
 import { Container, ProvidersList, Provider, Avatar, Name } from './styles';
 
 export default function SelectProvider({ navigation: { navigate } }) {
-    const [providers, setProviders] = useState([]);
+    // eslint-disable-next-line no-unused-vars
+    const [providers, _] = useState(async () => {
+        const response = await api.get('/providers');
 
-    useEffect(() => {
-        async function loadProviders() {
-            const response = await api.get('/providers');
+        const { data } = response;
 
-            setProviders(response.data);
-        }
-
-        loadProviders();
-    }, []);
+        return data || [];
+    });
 
     return (
         <Background>

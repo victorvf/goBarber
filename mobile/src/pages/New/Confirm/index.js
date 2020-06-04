@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { TouchableOpacity } from 'react-native';
 import { formatRelative, parseISO } from 'date-fns';
 import pt from 'date-fns/locale/pt';
@@ -18,7 +18,7 @@ export default function Confirm({ navigation: { reset }, route }) {
         [time]
     );
 
-    async function handleAddAppointment() {
+    const handleAddAppointment = useCallback(async () => {
         await api.post('/appointment/create', {
             date: time,
             provider_id: provider.id,
@@ -27,7 +27,7 @@ export default function Confirm({ navigation: { reset }, route }) {
         reset({
             routes: [{ name: 'Dashboard' }],
         });
-    }
+    }, [reset, time, provider]);
 
     return (
         <Background>

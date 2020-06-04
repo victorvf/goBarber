@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -26,9 +26,9 @@ export default function SignIn({ navigation }) {
     const [password, setPassword] = useState('');
     const loading = useSelector((state) => state.auth.loading);
 
-    function handleSubmit() {
+    const handleSubmit = useCallback(() => {
         dispatch(signInRequest(email, password));
-    }
+    }, [dispatch, email, password]);
 
     return (
         <Background>

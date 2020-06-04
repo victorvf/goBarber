@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useIsFocused } from '@react-navigation/native';
 
@@ -13,29 +13,35 @@ export default function Dashboard() {
     const [appointments, setAppointments] = useState([]);
     const isFocused = useIsFocused();
 
-    async function loadAppointments() {
+    const loadAppointments = useCallback(async () => {
         const response = await api.get('/appointments');
 
         setAppointments(response.data);
-    }
+    }, []);
 
     useEffect(() => {
         if (isFocused) {
             loadAppointments();
         }
-    }, [isFocused]);
+    }, [isFocused, loadAppointments]);
 
-    async function handleCancel(id) {
-        const response = await api.delete(`/appointment/${id}/delete`);
+    const handleCancel = useCallback(
+        async (id) => {
+            const response = await api.delete(`/appointment/${id}/delete`);
 
-        setAppointments(
-            appointments.map((appointment) =>
-                appointment.id === id
-                    ? { ...appointment, canceled_at: response.data.canceled_at }
-                    : appointment
-            )
-        );
-    }
+            setAppointments(
+                appointments.map((appointment) =>
+                    appointment.id === id
+                        ? {
+                              ...appointment,
+                              canceled_at: response.data.canceled_at,
+                          }
+                        : appointment
+                )
+            );
+        },
+        [appointments]
+    );
 
     return (
         <Background>
