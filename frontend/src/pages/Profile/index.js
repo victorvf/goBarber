@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Form, Input } from '@rocketseat/unform';
 import { useSelector, useDispatch } from 'react-redux';
 import { FaSpinner } from 'react-icons/fa';
@@ -15,13 +15,16 @@ export default function Profile() {
     const profile = useSelector((state) => state.user.profile);
     const loading = useSelector((state) => state.user.loading);
 
-    function handleSubmit(data) {
-        dispatch(updateProfileRequest(data));
-    }
+    const handleSubmit = useCallback(
+        (data) => {
+            dispatch(updateProfileRequest(data));
+        },
+        [dispatch]
+    );
 
-    function handleSignOut() {
+    const handleSignOut = useCallback(() => {
         dispatch(signOut());
-    }
+    }, [dispatch]);
 
     return (
         <Container loading>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Form, Input } from '@rocketseat/unform';
@@ -21,9 +21,12 @@ export default function SignIn() {
 
     const dispatch = useDispatch();
 
-    async function handleSubmit({ email, password }) {
-        dispatch(signInRequest(email, password));
-    }
+    const handleSubmit = useCallback(
+        async ({ email, password }) => {
+            dispatch(signInRequest(email, password));
+        },
+        [dispatch]
+    );
 
     return (
         <>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { MdNotifications } from 'react-icons/md';
 import { parseISO, formatDistance } from 'date-fns';
 import pt from 'date-fns/locale/pt';
@@ -14,8 +14,21 @@ import {
 } from './styles';
 
 export default function Notifications() {
-    const [notifications, setNotifications] = useState([]);
     const [visible, setVisible] = useState(false);
+    const [notifications, setNotifications] = useState(async () => {
+        const response = await api.get('/notifications');
+
+        const data = response.data.map((notification) => ({
+            ...notification,
+            timeDistance: formatDistance(
+                parseISO(notification.createdAt),
+                new Date(),
+                { addSuffix: true, locale: pt }
+            ),
+        }));
+
+        return data || [];
+    });
 
     const hasUnread = useMemo(
         () =>
@@ -23,40 +36,24 @@ export default function Notifications() {
         [notifications]
     );
 
-    function handleVisible() {
+    const handleVisible = useCallback(() => {
         setVisible(!visible);
-    }
+    }, [visible]);
 
-    useEffect(() => {
-        async function loadNotifications() {
-            const response = await api.get('/notifications');
+    const handleMarkAsRead = useCallback(
+        async (id) => {
+            await api.put(`/notification/${id}/update`);
 
-            const data = response.data.map((notification) => ({
-                ...notification,
-                timeDistance: formatDistance(
-                    parseISO(notification.createdAt),
-                    new Date(),
-                    { addSuffix: true, locale: pt }
-                ),
-            }));
-
-            setNotifications(data);
-        }
-
-        loadNotifications();
-    }, []);
-
-    async function handleMarkAsRead(id) {
-        await api.put(`/notification/${id}/update`);
-
-        setNotifications(
-            notifications.map((notification) =>
-                notification._id === id
-                    ? { ...notification, read: true }
-                    : notification
-            )
-        );
-    }
+            setNotifications(
+                notifications.map((notification) =>
+                    notification._id === id
+                        ? { ...notification, read: true }
+                        : notification
+                )
+            );
+        },
+        [notifications]
+    );
 
     return (
         <Container>
