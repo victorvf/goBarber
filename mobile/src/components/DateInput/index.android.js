@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { DatePickerAndroid } from 'react-native';
 import { format } from 'date-fns';
 import pt from 'date-fns/locale/pt';
@@ -12,7 +12,7 @@ export default function DateInput({ date, onChange }) {
         [date]
     );
 
-    async function handleOpenPicker() {
+    const handleOpenPicker = useCallback(async () => {
         const { action, year, month, day } = await DatePickerAndroid.open({
             mode: 'spinner',
             date,
@@ -24,7 +24,7 @@ export default function DateInput({ date, onChange }) {
 
             onChange(selectedDate);
         }
-    }
+    }, [date, onChange]);
 
     return (
         <Container>

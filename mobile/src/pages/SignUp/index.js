@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
@@ -28,9 +28,9 @@ export default function SignUp({ navigation }) {
     const [password, setPassword] = useState('');
     const loading = useSelector((state) => state.auth.loading);
 
-    function handleSubmit() {
+    const handleSubmit = useCallback(() => {
         dispatch(signUpRequest(name, email, password));
-    }
+    }, [dispatch, name, email, password]);
 
     return (
         <Background>

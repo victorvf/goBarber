@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -11,32 +11,30 @@ import { Container, HourList, Hour, Title } from './styles';
 
 export default function SelectDateTime({ navigation: { navigate }, route }) {
     const [date, setDate] = useState(new Date());
-    const [availables, setAvailables] = useState([]);
     const provider = route.params.item;
 
-    useEffect(() => {
-        async function loadAvailable() {
-            const response = await api.get(
-                `/providers/${provider.id}/available`,
-                {
-                    params: {
-                        date: date.getTime(),
-                    },
-                }
-            );
-
-            setAvailables(response.data);
-        }
-
-        loadAvailable();
-    }, [date, provider.id]);
-
-    function handleSelectHour(time) {
-        navigate('Confirm', {
-            provider,
-            time,
+    // eslint-disable-next-line no-unused-vars
+    const [availables, _] = useState(async () => {
+        const response = await api.get(`/providers/${provider.id}/available`, {
+            params: {
+                date: date.getTime(),
+            },
         });
-    }
+
+        const { data } = response;
+
+        return data || [];
+    });
+
+    const handleSelectHour = useCallback(
+        async (time) => {
+            navigate('Confirm', {
+                provider,
+                time,
+            });
+        },
+        [navigate, provider]
+    );
 
     return (
         <Background>

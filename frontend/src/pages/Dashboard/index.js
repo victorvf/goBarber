@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
     format,
     subDays,
@@ -23,55 +23,48 @@ const range = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
 
 export default function Dashboard() {
     const [date, setDate] = useState(new Date());
-    const [schedule, setSchedule] = useState([]);
+    // eslint-disable-next-line no-unused-vars
+    const [schedule, _] = useState(async () => {
+        const response = await api.get(`/schedules`, {
+            params: { date },
+        });
+
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        const data = range.map((hour) => {
+            const checkDate = setMilliseconds(
+                setSeconds(setMinutes(setHours(date, hour), 0), 0),
+                0
+            );
+
+            console.tron.log(checkDate);
+
+            const compareDate = utcToZonedTime(checkDate, timezone);
+
+            return {
+                time: `${hour}:00`,
+                past: isBefore(compareDate, new Date()),
+                appointment: response.data.find((a) =>
+                    isEqual(parseISO(a.date), compareDate)
+                ),
+            };
+        });
+
+        return data || [];
+    });
 
     const dateFormatted = useMemo(
         () => format(date, "d 'de' MMMM", { locale: pt }),
         [date]
     );
 
-    useEffect(() => {
-        async function loadSchedule() {
-            const response = await api.get(`/schedules`, {
-                params: { date },
-            });
-
-            console.tron.log(response.data);
-
-            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-            const data = range.map((hour) => {
-                const checkDate = setMilliseconds(
-                    setSeconds(setMinutes(setHours(date, hour), 0), 0),
-                    0
-                );
-
-                console.tron.log(checkDate);
-
-                const compareDate = utcToZonedTime(checkDate, timezone);
-
-                return {
-                    time: `${hour}:00`,
-                    past: isBefore(compareDate, new Date()),
-                    appointment: response.data.find((a) =>
-                        isEqual(parseISO(a.date), compareDate)
-                    ),
-                };
-            });
-
-            setSchedule(data);
-        }
-
-        loadSchedule();
+    const handlePrevDay = useCallback(() => {
+        setDate(subDays(date, 1));
     }, [date]);
 
-    function handlePrevDay() {
-        setDate(subDays(date, 1));
-    }
-
-    function handleNextDay() {
+    const handleNextDay = useCallback(() => {
         setDate(addDays(date, 1));
-    }
+    }, [date]);
 
     return (
         <Container>

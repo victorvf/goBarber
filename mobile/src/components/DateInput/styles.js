@@ -20,7 +20,7 @@ export const DateText = styled.Text`
     margin-left: 15px;
 `;
 
-export const Picket = styled.View`
+export const Picker = styled.View`
     background: #fff;
     padding: 15px 30px;
     margin-top: 30px;
